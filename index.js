@@ -22,19 +22,23 @@ const fileOrDir = (Path) => {
     });
   });
 };
+
+
 const directory = (dirPath) => {
   return new Promise((resolve, reject) => {
     const files = fs.readdirSync(dirPath);
     let directoryContent = [];
-    files.forEach((arch, i) => {
-      directoryContent[i] = fileOrDir(dirPath + "/" + arch)
+    files.forEach((arch, i) => { //Ejecuta función callback una vez por cada elemento
+      directoryContent[i] = fileOrDir(dirPath + "/" + arch) 
+      console.log("soy dirPath", dirPath);
+      console.log("soy archivo", arch);
     });
     Promise.all(directoryContent)
       .then((resultado) => {
-        return resultado.reduce((acc, val) => acc.concat(val), []);
+        return resultado.reduce((acc, val) => acc.concat(val), []); // accumulator, acumula cada iteración - Val (currentValue) valor devuelto
       })
       .then((resu) => {
-        resolve(resu.filter((val) => typeof val === "object"));
+        resolve(resu.filter((val) => typeof val === "object")); //filtra resultados cuyo valor sea de tipo objeto
       })
       .catch((error) => {
         reject(error);
@@ -43,7 +47,7 @@ const directory = (dirPath) => {
 
 }
 
-
+// Valor de retorno readFile
 const mdFiles = (dirPath) => {
   let ext = path.extname(dirPath).toLowerCase()
   if (ext === '.md') {
@@ -59,6 +63,7 @@ const getLinks = (file) => {
 
 //Lee el contenido del archivo 
 const readFile = (dirPath) => {
+  console.log(dirPath);
   return new Promise((resolve, rejects) => {
     fs.readFile(dirPath, "utf-8", (error, data) => {
       if (error) {
@@ -66,8 +71,8 @@ const readFile = (dirPath) => {
       }
       let links = [];
       let index = 0;
-      //Recorre todos los links y almacena los datos como un array de objetos
-      for (const url of getLinks(data)) {
+      //array que se itera en un for y se guarda en la constante url, luego crea un objeto para obtener los valores que se necesitan
+      for (const url of getLinks(data)) { 
         const obj = {
           href: url[2],
           text: url[1],
@@ -83,11 +88,11 @@ const readFile = (dirPath) => {
   });
 };
 
-//Valida los links con sus status
+//Valida los links con sus status - 
 const toValidate = links => {
   return new Promise((resolve, reject) => {
     let statusLinks = links.map(link => {
-      return fetch(link.href).then(res => {
+      return fetch(link.href).then(res => { 
         if (res.status === 200) {
           link.status = res.status;
           link.response = "O.K.";
@@ -199,4 +204,4 @@ const mdlinks = (dirPath, options) => {
   });
 };
 
-module.exports = {mdlinks,fileOrDir,readFile,toValidate,statsOption,statsToValidate};
+module.exports = {mdlinks,fileOrDir,readFile,toValidate,statsOption,statsToValidate, getLinks};

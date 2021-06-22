@@ -15,10 +15,7 @@ let options = {
     stats: false
 };
 
-if (
-    (optionOne === "--validate" && optionTwo === "--stats") ||
-    (optionOne === "--stats" && optionTwo === "--validate")
-) {
+if ((optionOne === "--validate" && optionTwo === "--stats") || (optionOne === "--stats" && optionTwo === "--validate")) {
     options.validate = true;
     options.stats = true;
 } else if (optionOne === "--validate") {
